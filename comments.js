@@ -1,18 +1,23 @@
-//create web server
+// Create web server
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var path = require('path');
-var commentsPath = path.join(__dirname, 'comments.json');
+var comments = require('./comments.js');
+var _ = require('underscore');
 
-//parse JSON
+var COMMENTS_FILE = path.join(__dirname, 'comments.json');
+
+app.set('port', (process.env.PORT || 3000));
+
+app.use('/', express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
-//get comments
-app.get('/comments', function(req, res) {
-  fs.readFile(commentsPath, function(err, data) {
-    if(err) {
+app.get('/api/comments', function(req, res) {
+  fs.readFile(COMMENTS_FILE, function(err, data) {
+    if (err) {
       console.error(err);
       process.exit(1);
     }
@@ -20,15 +25,3 @@ app.get('/comments', function(req, res) {
   });
 });
 
-//add comment
-app.post('/comments', function(req, res) {
-  fs.readFile(commentsPath, function(err, data) {
-    if(err) {
-      console.error(err);
-      process.exit(1);
-    }
-    var comments = JSON.parse(data);
-    var newComment = {
-      id: Date.now(),
-    }
-})});
